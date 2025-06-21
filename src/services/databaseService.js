@@ -10,21 +10,39 @@ const database_size = 200000;
 
 export class DatabaseService {
   static db = null;
+  static isInitializing = false;
+  static initPromise = null;
 
   static async initDatabase() {
+    // If already initializing, return the existing promise
+    if (this.isInitializing) {
+      return this.initPromise;
+    }
+
+    // If already initialized, return immediately
+    if (this.db) {
+      return this.db;
+    }
+
     try {
-      this.db = await SQLite.openDatabase(
+      this.isInitializing = true;
+      this.initPromise = SQLite.openDatabase(
         database_name,
         database_version,
         database_displayname,
         database_size
       );
-      
+
+      this.db = await this.initPromise;
       await this.createTables();
       console.log('Database initialized successfully');
+      return this.db;
     } catch (error) {
       console.error('Database initialization error:', error);
       throw error;
+    } finally {
+      this.isInitializing = false;
+      this.initPromise = null;
     }
   }
 
@@ -58,16 +76,50 @@ export class DatabaseService {
 
     await this.db.executeSql(createFlashcardsTable);
     await this.db.executeSql(createStatsTable);
-    
-    // Initialize stats if not exists
     await this.db.executeSql(`
       INSERT OR IGNORE INTO stats (id, updatedAt) 
       VALUES (1, datetime('now'))
     `);
   }
 
+  static async ensureConnection() {
+    if (!this.db) {
+      await this.initDatabase();
+    }
+  }
+
+  static async getAllFlashcards() {
+    try {
+      await this.ensureConnection();
+      const [results] = await this.db.executeSql('SELECT * FROM flashcards');
+      const flashcards = [];
+      for (let i = 0; i < results.rows.length; i++) {
+        flashcards.push(results.rows.item(i));
+      }
+      return flashcards;
+    } catch (error) {
+      console.error('Error fetching flashcards:', error);
+      throw error;
+    }
+  }
+
+  static async getStats() {
+    try {
+      await this.ensureConnection();
+      const [results] = await this.db.executeSql('SELECT * FROM stats WHERE id = 1');
+      if (results.rows.length > 0) {
+        return results.rows.item(0);
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      throw error;
+    }
+  }
+
   static async saveFlashcards(flashcards) {
     try {
+      await this.ensureConnection();
       const savedCards = [];
       
       for (const card of flashcards) {

@@ -46,9 +46,12 @@ export const AppContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   useEffect(() => {
-    DatabaseService.initDatabase();
-    loadFlashcards();
-    updateStats();
+    const initialize = async () => {
+      await DatabaseService.initDatabase();
+      await loadFlashcards();
+      await updateStats();
+    };
+    initialize();
   }, []);
 
   const loadFlashcards = async () => {
