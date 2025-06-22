@@ -55,22 +55,22 @@ export const AppContextProvider = ({ children }) => {
   }, []);
 
   const loadFlashcards = async () => {
-    try {
-      const cards = await DatabaseService.getAllFlashcards();
-      dispatch({ type: 'SET_FLASHCARDS', payload: cards });
-    } catch (error) {
-      console.error('Error loading flashcards:', error);
-    }
-  };
+  try {
+    const cards = await DatabaseService.getAllFlashcards();
+    dispatch({ type: 'SET_FLASHCARDS', payload: cards });
+  } catch (error) {
+    console.error('Error loading flashcards:', error);
+  }
+};
 
   const updateStats = async () => {
-    try {
-      const stats = await DatabaseService.getStats();
-      dispatch({ type: 'UPDATE_STATS', payload: stats });
-    } catch (error) {
-      console.error('Error updating stats:', error);
-    }
-  };
+  try {
+    const stats = await DatabaseService.getStats();
+    dispatch({ type: 'UPDATE_STATS', payload: stats });
+  } catch (error) {
+    console.error('Error updating stats:', error);
+  }
+};
 
   const addFlashcards = async (cards) => {
     try {

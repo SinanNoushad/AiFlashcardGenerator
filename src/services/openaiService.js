@@ -44,56 +44,55 @@ export class OpenAIService {
     }
   }
 
-  static parseFlashcards(content) {
-    const flashcards = [];
-    const lines = content.split('\n').filter(line => line.trim());
+ static parseFlashcards(content) {
+  const flashcards = [];
+  const lines = content.split('\n').filter(line => line.trim());
+  
+  let currentQuestion = '';
+  let currentAnswer = '';
+  
+  for (const line of lines) {
+    const trimmedLine = line.trim();
     
-    let currentQuestion = '';
-    let currentAnswer = '';
-    
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      
-      if (trimmedLine.startsWith('Q:')) {
-        // Save previous flashcard if exists
-        if (currentQuestion && currentAnswer) {
-          flashcards.push({
-            id: Date.now() + Math.random(),
-            question: currentQuestion,
-            answer: currentAnswer,
-            difficulty: 0,
-            repetitions: 0,
-            interval: 1,
-            easeFactor: 2.5,
-            nextReview: new Date(),
-            createdAt: new Date(),
-          });
-        }
-        currentQuestion = trimmedLine.substring(2).trim();
-        currentAnswer = '';
-      } else if (trimmedLine.startsWith('A:')) {
-        currentAnswer = trimmedLine.substring(2).trim();
-      } else if (currentAnswer && trimmedLine) {
-        // Continue answer on next line
-        currentAnswer += ' ' + trimmedLine;
+    if (trimmedLine.startsWith('Q:')) {
+      // Save previous flashcard if exists
+      if (currentQuestion && currentAnswer) {
+        flashcards.push({
+          question: currentQuestion,
+          answer: currentAnswer,
+          // Add Firebase required fields
+          interval: 1,
+          repetitions: 0,
+          easeFactor: 2.5,
+          nextReview: new Date(),
+          lastReviewed: null,
+          // Timestamps will be added in databaseService
+        });
       }
+      currentQuestion = trimmedLine.substring(2).trim();
+      currentAnswer = '';
+    } else if (trimmedLine.startsWith('A:')) {
+      currentAnswer = trimmedLine.substring(2).trim();
+    } else if (currentAnswer && trimmedLine) {
+      // Continue answer on next line
+      currentAnswer += ' ' + trimmedLine;
     }
-    
-    // Save last flashcard
-    if (currentQuestion && currentAnswer) {
-      flashcards.push({
-        id: Date.now() + Math.random(),
-        question: currentQuestion,
-        answer: currentAnswer,
-        difficulty: 0,
-        repetitions: 0,
-        interval: 1,
-        easeFactor: 2.5,
-        nextReview: new Date(),
-        createdAt: new Date(),
-      });
-    }
-    
-    return flashcards;
   }
+  
+  // Save last flashcard
+  if (currentQuestion && currentAnswer) {
+    flashcards.push({
+      question: currentQuestion,
+      answer: currentAnswer,
+      // Add Firebase required fields
+      interval: 1,
+      repetitions: 0,
+      easeFactor: 2.5,
+      nextReview: new Date(),
+      lastReviewed: null,
+    });
+  }
+  
+  return flashcards;
+}
 }
