@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "1005665267949",
-    "project_id": "aiflashcardgenerator",
-    "storage_bucket": "aiflashcardgenerator.firebasestorage.app"
+    "project_number": "40853920662",
+    "project_id": "aiflashcardgenerator-9de4e",
+    "storage_bucket": "aiflashcardgenerator-9de4e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1005665267949:android:b6a6cba5046c4393651ce4",
+        "mobilesdk_app_id": "1:40853920662:android:92a5347a36b77c828adbb7",
         "android_client_info": {
-          "package_name": "com.EgosDark.MyFlashCardGenerator"
+          "package_name": "com.aiflashcardgenerator"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCZ2bAW5V3nJq0hkesujcjheE4DGWSNk2w"
+          "current_key": "AIzaSyCH3HBu9U03A20O1YbdCvSfZChfRfakESY"
         }
       ],
       "services": {
